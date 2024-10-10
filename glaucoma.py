@@ -1,46 +1,43 @@
 import streamlit as st
 import torch
-from torchvision import transforms
-from torchvision import models
+import torch.nn as nn
 from PIL import Image
+from torchvision import transforms, models
 
-# Load the model
-model = models.resnet18(pretrained=False)
-model.fc = torch.nn.Sequential(
-    torch.nn.Dropout(p=0.5),
-    torch.nn.Linear(512, 2)
-)
-model.load_state_dict(torch.load('glaucoma_model.pth', map_location=torch.device('cpu')))
+# Initialize the model
+model = models.resnet18(pretrained=True)
+model.fc = nn.Linear(model.fc.in_features, 2)  # Modify the final layer
+model.load_state_dict(torch.load(r'glaucoma_model.pth', map_location=torch.device('cpu')))
 model.eval()
 
 # Define image transformations
-trans = transforms.Compose([
-    transforms.Resize((224, 224)),  # Resize the image to 224x224
-    transforms.ToTensor(),            # Convert to tensor
-    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),  # Normalize
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
-def classify(img):
-    img = img.unsqueeze(0)  # Add a batch dimension
-    print(f"Input shape to model: {img.shape}")  # Debugging statement
-    with torch.no_grad():    # Disable gradient tracking
-        out = model(img)     # Forward pass
-    _, pred = torch.max(out.data, 1)  # Get the predicted class index
-    return pred.item()      # Return the predicted class index
+# Function to predict the class of the image
+def predict(image):
+    image = transform(image).unsqueeze(0)  # Add batch dimension
+    with torch.no_grad():
+        output = model(image)  # Forward pass
+        _, predicted = torch.max(output, 1)  # Get the predicted class
+    return predicted.item()
 
-# Streamlit interface
+# Streamlit app layout
 st.title("Glaucoma Detection")
-st.write("Upload an image for glaucoma detection.")
+st.write("Upload a fundus image")
 
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg"])
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    img = Image.open(uploaded_file).convert("RGB")  # Convert image to RGB format
-    st.image(img, caption='Uploaded Image', use_column_width=True)  # Display the image
-    st.write("")
-    st.write("Classifying...")
-    
-    img = trans(img)  # Transform the image
-    pred = classify(img)  # Get the prediction
-    c = {0: "No Glaucoma", 1: "Glaucoma"}  # Class mapping
-    st.write("Prediction:", c[pred])  # Display the prediction
+    image = Image.open(uploaded_file)
+    st.image(image, caption='Uploaded Image.', use_column_width=False, width=600)
+
+    if st.button("Predict"):
+        label = predict(image)
+        if label == 0:
+            st.write("Prediction: No Glaucoma")
+        else:
+            st.write("Prediction: Glaucoma")
