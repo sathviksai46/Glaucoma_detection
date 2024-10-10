@@ -28,6 +28,7 @@ uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg
 
 if uploaded_file is not None:
     img= Image.open(uploaded_file)
+    img = Image.open(uploaded_file).convert("RGB")
     st.image(img, caption='Uploaded Image', use_column_width=True)
     st.write("")
     st.write("Classifying.")
