@@ -29,7 +29,7 @@ if uploaded_file is not None:
     img= Image.open(uploaded_file)
     st.image(img, caption='Uploaded Image', use_column_width=True)
     st.write("")
-    st.write("Classifying...")
+    st.write("Classifying.")
     img=trans(img)
     pred=classify(img)
     c= {0: "No Glaucoma", 1: "Glaucoma"}
