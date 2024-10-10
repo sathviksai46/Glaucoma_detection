@@ -4,10 +4,14 @@ import torch.nn as nn
 from PIL import Image
 from torchvision import transforms, models
 
-# Initialize the model
+# Load and modify the ResNet18 model for binary classification
 model = models.resnet18(pretrained=True)
-model.fc = nn.Linear(model.fc.in_features, 2)  # Modify the final layer
-model.load_state_dict(torch.load(r'glaucoma_model.pth', map_location=torch.device('cpu')))
+count_inp_feat = model.fc.in_features
+model.fc = nn.Sequential(
+    nn.Dropout(p=0.5),
+    nn.Linear(count_inp_feat, 2)
+)
+model.load_state_dict(torch.load('glaucoma_model.pth', map_location=torch.device('cpu')))
 model.eval()
 
 # Define image transformations
@@ -28,7 +32,7 @@ def predict(image):
 # Streamlit app layout
 st.title("Glaucoma Detection")
 st.write("Upload a fundus image")
-st.wrtie("heyyyyy")
+
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
