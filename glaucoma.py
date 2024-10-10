@@ -11,7 +11,7 @@ model.fc = nn.Sequential(
     nn.Dropout(p=0.5),
     nn.Linear(count_inp_feat, 2)
 )
-model.load_state_dict(torch.load('glaucoma_model.pth', map_location=torch.device('cpu')))
+model.load_state_dict(torch.load(r'glaucoma_model.pth', map_location=torch.device('cpu')))
 model.eval()
 
 # Define image transformations
