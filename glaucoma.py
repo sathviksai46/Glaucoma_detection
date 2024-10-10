@@ -18,7 +18,7 @@ trans = transforms.Compose([
 def classify(img):
     out=model(img)
     x,pred=torch.max(output.data, 1)
-    return classify.item()
+    return pred.item()
 
 st.title("Glaucoma Detection")
 st.write("Upload an image for glaucoma detection.")
