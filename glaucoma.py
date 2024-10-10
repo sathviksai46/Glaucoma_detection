@@ -7,7 +7,7 @@ from torchvision import models
 
 model = models.resnet18(pretrained=False)
 model.fc = nn.Sequential(nn.Dropout(p=0.5), nn.Linear(512, 2))
-model.load_state_dict(torch.load(r'C:\Users\laddu\Desktop\Glau\glaucoma_model.pth', map_location=torch.device('cpu')))
+model.load_state_dict(torch.load(r'glaucoma_model.pth', map_location=torch.device('cpu')))
 model.eval()
 
 trans = transforms.Compose([
