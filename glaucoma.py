@@ -16,7 +16,7 @@ trans = transforms.Compose([
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
 
-st.title("Glaucoma Detection")
+st.title("Glaucoma Detection.")
 st.write("Upload an eye image to predict whether glaucoma is present or not.")
 file=st.file_uploader("Choose a fundus image:", type=["jpg", "jpeg", "png"])
 if file is not None:
