@@ -21,7 +21,7 @@ st.write("Upload an eye image to predict whether glaucoma is present or not.")
 file=st.file_uploader("Choose a fundus image:", type=["jpg", "jpeg", "png"])
 if file is not None:
     img= Image.open(file)
-    st.image(img, caption='Uploaded Image',width=150)
+    st.image(img, caption='Uploaded Image',width=300)
     image = trans(img).unsqueeze(0)
     out=model(image)
     x,pred=torch.max(out, 1)
